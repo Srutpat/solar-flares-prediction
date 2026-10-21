@@ -1,0 +1,26 @@
+:Product: 20261013events.txt
+:Created: 2026 Oct 16 0357 UT
+:Date: 2026 10 13
+# Prepared by the U.S. Dept. of Commerce, NOAA, Space Weather Prediction Center
+# Please send comments and suggestions to SWPC.Webmaster@noaa.gov 
+#
+# Missing data: ////
+# Updated every 5 minutes.
+#                            Edited Events for 2026 Oct 13
+#
+#Event    Begin    Max       End  Obs  Q  Type  Loc/Frq   Particulars       Reg#
+#-------------------------------------------------------------------------------
+
+1400 +     0329   0340      0347  G18  5   XRA  1-8A      C1.2    1.3E-03   4549
+
+1410 +     1608   1632      1643  G18  5   XRA  1-8A      C4.2    5.4E-03   4549
+
+1420       1844   1852      1858  G19  5   XRA  1-8A      B9.1    8.9E-04   4549
+
+1450       1858   1903      1905  G19  5   XRA  1-8A      B9.6    5.3E-04   4549
+
+1430       2015   2017      2021  HOL  3   FLA  S11E19    SF                4551
+
+1460       2020   2021      2026  HOL  3   FLA  N06E60    SF                4556
+
+1440 +     2142   2150      2155  G18  5   XRA  1-8A      B9.9    7.0E-04   4549

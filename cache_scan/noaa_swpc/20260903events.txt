@@ -1,0 +1,68 @@
+:Product: 20260903events.txt
+:Created: 2026 Sep 06 0357 UT
+:Date: 2026 09 03
+# Prepared by the U.S. Dept. of Commerce, NOAA, Space Weather Prediction Center
+# Please send comments and suggestions to SWPC.Webmaster@noaa.gov 
+#
+# Missing data: ////
+# Updated every 5 minutes.
+#                            Edited Events for 2026 Sep 03
+#
+#Event    Begin    Max       End  Obs  Q  Type  Loc/Frq   Particulars       Reg#
+#-------------------------------------------------------------------------------
+
+6920      B0000   ////     B0052  HOL  3   LPS  ////      0.08              4524
+
+6930 +     0117   0130      0144  G18  5   XRA  1-8A      B8.9    1.3E-03   4524
+
+6940       0350   ////      0351  PAL  U   RSP  025-075   III/1                 
+
+6960       0453   ////      0550  SVI  C   RSP  025-081   CTM/1                 
+
+6950       0507   0512      0516  G18  5   XRA  1-8A      B6.0    3.4E-04   4520
+
+6960 +     0539   0543      0546  G18  5   XRA  1-8A      B7.0    3.1E-04   4523
+
+6970 +     0629   0633      0636  G18  5   XRA  1-8A      B6.2    2.8E-04   4523
+
+6980 +     0659   0706      0708  G18  5   XRA  1-8A      B6.9    3.7E-04   4523
+
+6990 +     0935   0942      0948  G18  5   XRA  1-8A      C2.2    1.2E-03   4523
+6990       0939   0943      0956  SVI  3   FLA  N10E43    SF                4523
+
+7000 +     1140   1147      1150  G18  5   XRA  1-8A      C1.1    5.6E-04   4523
+7000       1145   1146      1150  SVI  3   FLA  N10E43    SF                4523
+
+7010 +     1152   1159      1205  G18  5   XRA  1-8A      C4.2    2.2E-03   4523
+7010       1156   1157      1212  SVI  3   FLA  N10E42    SF                4523
+
+7020 +     1436   1446      1452  G18  5   XRA  1-8A      C6.9    3.4E-03   4523
+7020 +     1443   1445      1502  HOL  3   FLA  N13E40    SB                4523
+
+7050       1444   1445      1447  SVI  3   FLA  N09E39    SF                4521
+
+7030       1613   1630      1822  G19  5   XRA  1-8A      C7.9    1.9E-02   4524
+7030 +     1617   ////      1625  SAG  C   RSP  025-180   III/2             4524
+7030 +     1618   1626      1639  HOL  3   FLA  N14E71    SN      DSD       4524
+
+7190      A1628   ////     A0609  SVI  3   DSF  N52E53    10                    
+
+7030 +     1629   ////      1635  SAG  C   RSP  025-053   II/2    1359      4524
+
+7060 +     1822   1829      1833  G18  5   XRA  1-8A      C3.0    1.8E-03   4523
+7060       1826   1828      1853  HOL  3   FLA  N11E38    SN                4523
+
+7120       1911   ////      2257  PAL  C   RSP  025-180   III/3                 
+
+7070       1928   ////      1929  SAG  C   RSP  025-180   V/3                   
+
+7080       1944   1948      1954  HOL  3   FLA  N11E37    SF                4523
+
+7090       1955   2003      2037  HOL  3   FLA  N11E37    SB      ERU       4523
+7090 +     1955   2003      2016  G18  5   XRA  1-8A      C3.7    4.1E-03   4523
+
+7100       2009   2011      2021  HOL  3   FLA  N11E70    SF                4524
+
+7110 +     2036   ////      2213  SAG  C   RSP  025-180   CTM/1                 
+
+7130       2227   ////      2359  HOL  2   BSL  ////      0.13                  

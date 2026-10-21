@@ -1,0 +1,18 @@
+[project]
+name = "solar-flare-framework"
+version = "0.1.0"
+description = "Precursor-based solar flare forecasting framework (SoLEXS/HEL1OS, Aditya-L1)"
+requires-python = ">=3.10"
+dependencies = ["PyYAML>=6.0", "numpy>=1.24", "pandas>=2.0", "astropy>=6.0"]
+
+[project.optional-dependencies]
+# Data dependencies used by Phase 2.
+data = ["numpy", "pandas", "astropy"]
+models = ["scikit-learn", "xgboost", "shap"]
+dl = ["torch"]
+viz = ["matplotlib"]
+dev = ["pytest"]
+
+[tool.pytest.ini_options]
+pythonpath = ["."]
+testpaths = ["tests"]

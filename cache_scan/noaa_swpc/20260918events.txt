@@ -1,0 +1,14 @@
+:Product: 20260918events.txt
+:Created: 2026 Sep 21 0357 UT
+:Date: 2026 09 18
+# Prepared by the U.S. Dept. of Commerce, NOAA, Space Weather Prediction Center
+# Please send comments and suggestions to SWPC.Webmaster@noaa.gov 
+#
+# Missing data: ////
+# Updated every 5 minutes.
+#                            Edited Events for 2026 Sep 18
+#
+#Event    Begin    Max       End  Obs  Q  Type  Loc/Frq   Particulars       Reg#
+#-------------------------------------------------------------------------------
+
+8910 +     1348   ////      1403  SAG  C   RSP  025-045   VI/2                  

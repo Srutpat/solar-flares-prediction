@@ -1,0 +1,9 @@
+extends: base.yaml
+experiment:
+  name: combined
+data:
+  input_configuration: combined
+
+features:
+  history_window_minutes: 60
+  rolling_window_minutes: [1, 5, 15]

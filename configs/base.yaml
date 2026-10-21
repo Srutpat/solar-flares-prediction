@@ -1,0 +1,91 @@
+# Base experiment configuration. The three arms inherit from this file and may
+# differ ONLY in experiment.name and data.input_configuration.
+#
+# `null` means UNRESOLVED: "Cannot determine until the dataset is inspected."
+# Nothing here assumes columns, timestamp format, cadence, or flare labels.
+
+experiment:
+  name: base
+  seed: 42
+  description: "Shared settings for the three-arm SoLEXS / HEL1OS / combined comparison."
+
+data:
+  input_configuration: combined    # solexs_only | helios_only | combined  (set per arm)
+  source_path: null                # real dataset location (teammate is preparing it)
+  solexs_source: null              # optional per-instrument paths if delivered separately
+  helios_source: null
+  time_column: null                # adapter must detect and REPORT; set only to override
+  timestamp_format: null
+  measurement_columns: null
+  quality_flag_columns: null
+
+preprocessing:
+  sort_chronologically: true
+  duplicate_timestamp_policy: report_only   # report_only | keep_first | keep_last | error
+  missing_value_policy: report_only         # report_only | error
+  use_quality_flags: null
+
+synchronization:
+  method: asof_backward            # causal: use only the latest observation at or before the reference timestamp
+  max_staleness_seconds: 1.0       # supported by the inspected ~1-second SoLEXS/HEL1OS cadence
+
+labels:
+  horizons_minutes: [15, 30, 45, 60]   # experimental horizons, NOT guaranteed warning times
+  onset_detection_rule: "reference_catalogue_onset_utc; positive iff onset is in (t, t+horizon]"
+  reference_catalogue_path: null
+  association_tolerance_minutes: null
+
+features:
+  groups: [levels, rates, rolling_stats, cross_instrument]   # built only if the data support them
+  history_window_minutes: null
+  rolling_window_minutes: null
+
+split:
+  method: chronological_fractions  # chronological_fractions | chronological_dates (never random)
+  train_fraction: null
+  val_fraction: null
+  test_fraction: null
+  train_end: null
+  val_end: null
+  purge_gap_minutes: null
+
+imbalance:
+  strategy: class_weight           # none | class_weight | controlled_sampling (train split only)
+
+models:
+  xgboost:
+    enabled: true
+    params: {}                     # tuned on validation only
+    early_stopping_rounds: null
+  lstm:
+    enabled: false                 # Phase 12, only after XGBoost works
+    sequence_length: null
+    hidden_units: null
+    layers: null
+    dropout: null
+    optimizer: null
+    learning_rate: null
+    epochs: null
+    batch_size: null
+    early_stopping_patience: null
+
+threshold:
+  criterion: max_tss_validation    # chosen on validation, then frozen before test
+  fixed_before_test: true
+
+evaluation:
+  metrics: [tss, hss, precision, recall, auc, confusion_matrix]
+  lead_time: true
+  report_accuracy_supplementary: true
+
+ablation:
+  enabled: false
+  steps: [levels_only, levels_rates, levels_rolling, all_causal, combined_instruments]
+
+interpretability:
+  feature_importance: true
+  shap: false
+
+output:
+  runs_dir: experiments/runs
+  log_level: INFO

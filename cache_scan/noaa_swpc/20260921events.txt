@@ -1,0 +1,31 @@
+:Product: 20260921events.txt
+:Created: 2026 Sep 24 0357 UT
+:Date: 2026 09 21
+# Prepared by the U.S. Dept. of Commerce, NOAA, Space Weather Prediction Center
+# Please send comments and suggestions to SWPC.Webmaster@noaa.gov 
+#
+# Missing data: ////
+# Updated every 5 minutes.
+#                            Edited Events for 2026 Sep 21
+#
+#Event    Begin    Max       End  Obs  Q  Type  Loc/Frq   Particulars       Reg#
+#-------------------------------------------------------------------------------
+
+9200 +     0059   0113      0125  G18  5   XRA  1-8A      C1.1    1.4E-03   4534
+
+9210 +     0313   0319      0325  G18  5   XRA  1-8A      B5.5    4.0E-04   4534
+
+9220 +     0621   0629      0635  G18  5   XRA  1-8A      C1.2    7.3E-04   4534
+9220       0627   0628      0643  SVI  3   FLA  N10W13    SF                4534
+
+9230       0942   0949      0953  G19  5   XRA  1-8A      B3.9    3.3E-04   4534
+
+9250       0953   0956      0959  G19  5   XRA  1-8A      B4.0    1.9E-04   4534
+
+9240 +     1108   1117      1125  G18  5   XRA  1-8A      B6.8    5.9E-04   4535
+
+9260       2125   2125      2125  PAL  U   RBR  245       1100                  
+
+9270       2144   2144      2144  PAL  U   RBR  245       280                   
+
+9280 +     2352   2357      0001  G18  5   XRA  1-8A      B6.5    3.4E-04   4534

@@ -1,0 +1,46 @@
+:Product: 20261009events.txt
+:Created: 2026 Oct 12 0357 UT
+:Date: 2026 10 09
+# Prepared by the U.S. Dept. of Commerce, NOAA, Space Weather Prediction Center
+# Please send comments and suggestions to SWPC.Webmaster@noaa.gov 
+#
+# Missing data: ////
+# Updated every 5 minutes.
+#                            Edited Events for 2026 Oct 09
+#
+#Event    Begin    Max       End  Obs  Q  Type  Loc/Frq   Particulars       Reg#
+#-------------------------------------------------------------------------------
+
+ 930       0428   0439      0450  G18  5   XRA  1-8A      C1.6    1.9E-03   4549
+
+ 940 +     0527   0539      0550  G18  5   XRA  1-8A      C4.0    3.9E-03   4549
+
+ 950 +     0639   0648      0653  G18  5   XRA  1-8A      C2.9    2.1E-03   4549
+
+ 960       0818   0827      0830  G19  5   XRA  1-8A      C2.2    2.0E-03   4549
+
+1040       0830   0840      0845  G19  5   XRA  1-8A      C3.9    3.0E-03   4549
+
+ 970 +     0953   1001      1008  G18  5   XRA  1-8A      C1.3    1.1E-03   4549
+
+ 980 +     1124   1131      1139  G18  5   XRA  1-8A      C1.3    1.1E-03   4549
+
+ 990 +     1215   1217      1220  G18  5   XRA  1-8A      C1.5    5.0E-04   4549
+
+1000 +     1233   1239      1247  G18  5   XRA  1-8A      C1.8    1.4E-03   4549
+
+1010 +     1303   1312      1315  G18  5   XRA  1-8A      C4.3    1.8E-03   4549
+
+1020 +     1355   1409      1417  G18  5   XRA  1-8A      M1.3    1.1E-02   4547
+
+1030       1459   ////      1750  HOL  3   LPS  ////      0.09    B.1A      4547
+1030 +     1557   1602      1607  G18  5   XRA  1-8A      C1.4    9.3E-04   4547
+
+1050 +     2152   2158      2200  G18  5   XRA  1-8A      C1.4    7.2E-04   4551
+
+1060 +     2247   2252      2256  G18  5   XRA  1-8A      C1.2    7.1E-04   4549
+1060       2251   2253      2256  HOL  3   FLA  N09W43    SF                4549
+
+1070       2314   2314      2314  PAL  U   RBR  245       180                   
+
+1080       2340   2351      0015  G18  5   XRA  1-8A      C3.1    5.2E-03   4549

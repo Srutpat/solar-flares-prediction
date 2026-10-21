@@ -1,0 +1,49 @@
+:Product: 20260906events.txt
+:Created: 2026 Sep 09 0357 UT
+:Date: 2026 09 06
+# Prepared by the U.S. Dept. of Commerce, NOAA, Space Weather Prediction Center
+# Please send comments and suggestions to SWPC.Webmaster@noaa.gov 
+#
+# Missing data: ////
+# Updated every 5 minutes.
+#                            Edited Events for 2026 Sep 06
+#
+#Event    Begin    Max       End  Obs  Q  Type  Loc/Frq   Particulars       Reg#
+#-------------------------------------------------------------------------------
+
+7500       0025   ////      0027  PAL  C   RSP  025-074   III/2                 
+
+7510       0154   ////      0154  PAL  C   RSP  025-075   III/2                 
+
+7520       0237   ////      0238  PAL  C   RSP  025-080   III/2                 
+
+7530       0314   ////      0337  PAL  C   RSP  025-082   VI/2                  
+
+7540       0455   0503      0517  G18  5   XRA  1-8A      B8.4    1.1E-03   4524
+7540       0511   ////      0512  SVI  C   RSP  025-180   III/2                 
+
+7560       0543   ////      0920  SVI  C   RSP  025-180   VI/2                  
+
+7550       0759   0802      0810  SVI  3   FLA  N13E41    SF                4524
+
+7570 +     1031   1042      1048  G18  5   XRA  1-8A      C5.0    2.8E-03   4524
+7570 +     1035   ////      1041  SVI  C   RSP  025-180   III/3             4524
+7570       1037   1038      1113  SVI  3   FLA  N12E31    1N      ERU       4524
+7570 +     1037   1038      1038  SVI  G   RBR  245       570               4524
+7570       1041   ////      1056  SVI  C   RSP  025-180   VI/2              4524
+
+7580 +     1144   ////      1226  SAG  C   RSP  025-071   VI/1                  
+
+7590 +     1313   ////      1313  SVI  C   RSP  025-061   III/2                 
+
+7600 +     1315   1334      1351  G18  5   XRA  1-8A      C1.1    1.9E-03   4528
+
+7610 +     1536   ////      1553  SAG  C   RSP  025-074   VI/1                  
+
+7620 +     1658   ////      1758  SAG  C   RSP  025-180   VI/2                  
+
+7630       1947   ////      2015  PAL  C   RSP  025-083   VI/1                  
+
+7640       2124   ////      2124  PAL  C   RSP  025-040   III/2                 
+
+7650       2302   2303      2303  PAL  U   RBR  245       520                   

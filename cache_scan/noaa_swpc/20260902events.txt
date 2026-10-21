@@ -1,0 +1,51 @@
+:Product: 20260902events.txt
+:Created: 2026 Sep 05 0357 UT
+:Date: 2026 09 02
+# Prepared by the U.S. Dept. of Commerce, NOAA, Space Weather Prediction Center
+# Please send comments and suggestions to SWPC.Webmaster@noaa.gov 
+#
+# Missing data: ////
+# Updated every 5 minutes.
+#                            Edited Events for 2026 Sep 02
+#
+#Event    Begin    Max       End  Obs  Q  Type  Loc/Frq   Particulars       Reg#
+#-------------------------------------------------------------------------------
+
+6770       0000   ////      0001  PAL  C   RSP  025-071   III/2                 
+
+6780       0136   0139      0141  G19  5   XRA  1-8A      B6.1    2.3E-04   4524
+
+6790       0628   ////      0659  SVI  C   RSP  025-070   VI/1                  
+
+6800       0750   ////      0907  SVI  C   RSP  025-077   VI/1                  
+
+6820       1153   ////      1313  SVI  C   RSP  025-155   VI/2                  
+
+6810       1238   ////      1239  SAG  C   RSP  025-180   III/2                 
+
+6830 +     1309   1321      1327  G18  5   XRA  1-8A      C1.2    9.5E-04   4524
+6830       1312   ////      1316  SAG  C   RSP  025-055   III/1                 
+
+6840       1527   ////      1527  SAG  C   RSP  025-050   III/1                 
+
+6850 +     1533   1547      1604  G18  5   XRA  1-8A      C1.3    2.0E-03   4524
+
+6860       1612   ////      1613  SVI  C   RSP  025-147   III/1                 
+6860       1613   ////      1625  SAG  C   RSP  025-078   VI/1                  
+
+6870 +     1618   1630      1639  G18  5   XRA  1-8A      C1.5    1.5E-03   4524
+
+6880       1704   ////      1811  SAG  C   RSP  025-051   VI/1                  
+6880       1744   ////      1744  PAL  C   RSP  025-060   III/1                 
+
+6890 +     1857   1920      1948  G18  5   XRA  1-8A      M3.0    5.7E-02   4524
+6890       1903   ////      1918  HOL  3   EPL  ////      0.2     B.9A      4524
+6890       1904   1905      1906  SAG  G   RBR  610       120               4524
+6890 +     1907   ////      1913  SAG  C   RSP  025-180   III/2             4524
+6890 +     1919   ////      1922  SAG  C   RSP  025-055   II/2    1181      4524
+6890 +     1920   ////      1941  SAG  C   RSP  025-055   IV/2              4524
+6890       1933   ////      2359  HOL  3   LPS  ////      0.08              4524
+
+6900 +     2025   ////      2028  SAG  C   RSP  025-180   III/2                 
+
+6910       2145   ////      2231  PAL  U   RSP  025-075   VI/2                  

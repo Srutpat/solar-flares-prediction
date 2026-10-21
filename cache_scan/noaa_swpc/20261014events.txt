@@ -1,0 +1,48 @@
+:Product: 20261014events.txt
+:Created: 2026 Oct 17 0357 UT
+:Date: 2026 10 14
+# Prepared by the U.S. Dept. of Commerce, NOAA, Space Weather Prediction Center
+# Please send comments and suggestions to SWPC.Webmaster@noaa.gov 
+#
+# Missing data: ////
+# Updated every 5 minutes.
+#                            Edited Events for 2026 Oct 14
+#
+#Event    Begin    Max       End  Obs  Q  Type  Loc/Frq   Particulars       Reg#
+#-------------------------------------------------------------------------------
+
+1470 +     0049   0106      0116  G18  5   XRA  1-8A      B9.7    1.5E-03   4551
+
+1480 +     0159   0221      0239  G18  5   XRA  1-8A      C6.9    1.1E-02   4549
+
+1490 +     0349   0356      0402  G18  5   XRA  1-8A      C1.1    8.8E-04   4551
+
+1500       0822   0836      0854  G19  5   XRA  1-8A      C1.3    2.4E-03   4551
+
+1540       1021   ////      1202  SVI  3   DSF  N46E15    35                    
+
+1510 +     1316   1324      1328  G18  5   XRA  1-8A      C1.0    9.1E-04   4551
+
+1620 +     1328   1336      1339  G18  5   XRA  1-8A      C1.3    8.0E-04   4551
+
+1520 +     1426   1434      1439  G18  5   XRA  1-8A      C1.3    8.9E-04   4551
+
+1530 +     1440   1444      1447  G18  5   XRA  1-8A      C1.9    7.8E-04   4551
+1530       1442   1445      1454  SVI  3   FLA  S13E13    SF                4551
+
+1550 +     1548   1557      1604  G18  5   XRA  1-8A      C2.2    1.7E-03   4551
+1550       1554   1556      1613  HOL  3   FLA  S12E13    SF      DSD       4551
+
+1560       1648   1648      1648  PAL  U   RBR  245       1600                  
+
+1570       1652   1652      1652  PAL  U   RBR  245       1000                  
+
+1580       2035   2035      2039  HOL  3   FLA  S11E10    SF                4551
+
+1590       2111   2112      2117  HOL  3   FLA  S11E09    SF      ERU       4551
+
+1600       2118   2125      2128  HOL  3   FLA  S11E10    SF      ERU       4551
+
+1610       2131   2140      2141  HOL  3   FLA  S11E10    SF      ERU       4551
+
+1630       2313   2314      2318  HOL  3   FLA  S10E04    SF      ERU       4551

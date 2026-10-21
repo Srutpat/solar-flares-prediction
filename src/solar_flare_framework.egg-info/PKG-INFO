@@ -1,0 +1,23 @@
+Metadata-Version: 2.4
+Name: solar-flare-framework
+Version: 0.1.0
+Summary: Precursor-based solar flare forecasting framework (SoLEXS/HEL1OS, Aditya-L1)
+Requires-Python: >=3.10
+Requires-Dist: PyYAML>=6.0
+Requires-Dist: numpy>=1.24
+Requires-Dist: pandas>=2.0
+Requires-Dist: astropy>=6.0
+Provides-Extra: data
+Requires-Dist: numpy; extra == "data"
+Requires-Dist: pandas; extra == "data"
+Requires-Dist: astropy; extra == "data"
+Provides-Extra: models
+Requires-Dist: scikit-learn; extra == "models"
+Requires-Dist: xgboost; extra == "models"
+Requires-Dist: shap; extra == "models"
+Provides-Extra: dl
+Requires-Dist: torch; extra == "dl"
+Provides-Extra: viz
+Requires-Dist: matplotlib; extra == "viz"
+Provides-Extra: dev
+Requires-Dist: pytest; extra == "dev"

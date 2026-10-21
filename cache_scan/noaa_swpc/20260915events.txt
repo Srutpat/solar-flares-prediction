@@ -1,0 +1,32 @@
+:Product: 20260915events.txt
+:Created: 2026 Sep 18 0357 UT
+:Date: 2026 09 15
+# Prepared by the U.S. Dept. of Commerce, NOAA, Space Weather Prediction Center
+# Please send comments and suggestions to SWPC.Webmaster@noaa.gov 
+#
+# Missing data: ////
+# Updated every 5 minutes.
+#                            Edited Events for 2026 Sep 15
+#
+#Event    Begin    Max       End  Obs  Q  Type  Loc/Frq   Particulars       Reg#
+#-------------------------------------------------------------------------------
+
+8720 +     1457   1509      1523  G18  5   XRA  1-8A      B5.4    7.5E-04       
+
+8730       1850   1850      1850  PAL  U   RBR  245       140                   
+
+8740       1903   1903      1903  PAL  U   RBR  245       150                   
+
+8750       1905   1906      1906  PAL  U   RBR  245       380                   
+
+8760       1913   1913      1913  PAL  U   RBR  245       410                   
+
+8770       1932   1933      1934  PAL  U   RBR  245       390                   
+
+8780       2022   2022      2022  PAL  U   RBR  245       120                   
+
+8790       2027   2028      2028  SAG  G   RBR  245       2100                  
+
+8800       2035   2035      2036  SAG  G   RBR  245       1000                  
+
+8810       2038   2038      2038  PAL  U   RBR  245       530                   

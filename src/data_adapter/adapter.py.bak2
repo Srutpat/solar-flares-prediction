@@ -1,0 +1,697 @@
+"""Phase 2: dataset adapter for the actual SoLEXS and HEL1OS FITS products.
+
+The adapter is deliberately conservative:
+- it discovers FITS products and table extensions instead of hard-coding a band;
+- it reports all candidate measurement columns;
+- it standardizes timestamps to UTC without changing observations;
+- it does not drop NaNs, apply GTIs, resample, synchronize instruments, or choose
+  final model features. Those decisions belong to later phases.
+
+The adapter uses Astropy because the supplied ISRO SoLEXS products and HEL1OS
+products are FITS/FITS.GZ files.
+"""
+from __future__ import annotations
+
+import io
+import json
+import math
+import re
+import tempfile
+import zipfile
+import gzip
+from contextlib import contextmanager
+from dataclasses import asdict, dataclass, field
+from pathlib import Path
+from typing import Any, Iterator, Optional
+
+import numpy as np
+import pandas as pd
+
+from src.core.errors import ConfigError
+from src.core.interfaces import DataAdapter, SchemaReport
+from src.core.logging_setup import TransformationLog, get_logger
+
+
+FITS_SUFFIXES = (
+    ".fits", ".fit", ".fts",
+    ".fits.gz", ".fit.gz", ".fts.gz",
+    # ISRO SoLEXS Level-1 products are FITS files whose product-specific
+    # suffixes are .lc.gz, .gti.gz and .pi.gz.
+    ".lc", ".gti", ".pi", ".lc.gz", ".gti.gz", ".pi.gz",
+    # Keep discovery extensible for other FITS-based products.
+    ".evt", ".event", ".evt.gz", ".event.gz",
+)
+LIGHTCURVE_HINTS = ("lightcurve", "light_curve", "_lc", ".lc")
+
+
+class DataAdapterError(RuntimeError):
+    """A clear, user-facing Phase-2 data-adapter error."""
+
+
+@dataclass(frozen=True)
+class SourceFile:
+    """A FITS file either on disk or inside a ZIP archive."""
+
+    source: str
+    member: Optional[str] = None
+
+    @property
+    def display_name(self) -> str:
+        return f"{self.source}::{self.member}" if self.member else self.source
+
+
+@dataclass
+class LoadedFITS:
+    ref: SourceFile
+    instrument: Optional[str]
+    headers: list[dict[str, Any]] = field(default_factory=list)
+    product_types: list[str] = field(default_factory=list)
+
+
+@dataclass
+class StandardizedStream:
+    """One untouched measurement stream from one FITS table extension."""
+
+    stream_id: str
+    instrument: Optional[str]
+    detector: Optional[str]
+    product_type: str
+    extension: str
+    source_file: str
+    measurement_columns: list[str]
+    dataframe: pd.DataFrame
+    metadata: dict[str, Any] = field(default_factory=dict)
+
+
+@dataclass
+class AdapterResult:
+    """Phase-2 output passed to later stages."""
+
+    report: SchemaReport
+    streams: dict[str, StandardizedStream]
+    files: list[LoadedFITS]
+
+
+class _Astropy:
+    """Lazy Astropy import so Phase-1 config/tests can run without Astropy."""
+
+    fits = None
+    Time = None
+
+    @classmethod
+    def load(cls):
+        if cls.fits is None:
+            try:
+                from astropy.io import fits
+                from astropy.time import Time
+            except ImportError as exc:
+                raise DataAdapterError(
+                    "Phase 2 requires Astropy for FITS/FITS.GZ data. "
+                    "Install the data dependencies with: pip install -e .[data]"
+                ) from exc
+            cls.fits = fits
+            cls.Time = Time
+        return cls.fits, cls.Time
+
+
+def _is_fits_name(name: str) -> bool:
+    lower = name.lower()
+    return any(lower.endswith(s) for s in FITS_SUFFIXES)
+
+
+def _is_lightcurve_name(name: str) -> bool:
+    lower = name.lower()
+    return any(h in lower for h in LIGHTCURVE_HINTS)
+
+
+def _clean(value: Any) -> Any:
+    if value is None:
+        return None
+    if isinstance(value, (np.generic,)):
+        value = value.item()
+    if isinstance(value, float) and (math.isnan(value) or math.isinf(value)):
+        return None
+    return value
+
+
+def _header_to_dict(header) -> dict[str, Any]:
+    out: dict[str, Any] = {}
+    for key in header.keys():
+        if key in ("", "COMMENT", "HISTORY"):
+            continue
+        try:
+            out[key] = _clean(header[key])
+        except Exception:
+            out[key] = str(header[key])
+    return out
+
+
+def _classify_product(name: str, headers: list[dict[str, Any]]) -> str:
+    lower = name.lower()
+    if _is_lightcurve_name(lower):
+        return "lightcurve"
+    if "gti" in lower:
+        return "gti"
+    if "event" in lower or "evt" in lower:
+        return "event"
+    if ".pi" in lower or "spectrum" in lower or "spectra" in lower:
+        return "spectrum"
+    exts = " ".join(str(h.get("EXTNAME", "")) for h in headers).lower()
+    if "rate" in exts or "lightcurve" in exts:
+        return "lightcurve"
+    if "gti" in exts:
+        return "gti"
+    if "spectrum" in exts:
+        return "spectrum"
+    return "other_fits_table"
+
+
+def _instrument_from_headers(headers: list[dict[str, Any]], name: str) -> Optional[str]:
+    for h in headers:
+        for key in ("INSTRUME", "INSTRUMENT"):
+            value = h.get(key)
+            if value:
+                text = str(value).strip()
+                if text:
+                    return text
+    upper = name.upper()
+    if "SOLEXS" in upper or "SLX" in upper:
+        return "SoLEXS"
+    if "HEL1OS" in upper or "HLS_" in upper:
+        return "HEL1OS"
+    return None
+
+
+def _detector_from_header(header: dict[str, Any], filename: str) -> Optional[str]:
+    # The supplied filenames carry detector numbers (SDD1/2, CZT1/2, CdTe1/2).
+    # Prefer that exact identifier over a generic DETNAM such as "CZT".
+    match = re.search(r"(?:SDD[12]|CZT[12]|CDTE[12])", filename, flags=re.I)
+    if match:
+        return match.group(0)
+    for key in ("DETNAM", "DETECTOR"):
+        value = header.get(key)
+        if value:
+            return str(value).strip()
+    return None
+
+
+def _unit_for_column(hdu, column: str) -> Optional[str]:
+    try:
+        for item in hdu.columns:
+            if str(item.name).strip().lower() == column.strip().lower():
+                return str(item.unit) if item.unit is not None else None
+    except Exception:
+        pass
+    return None
+
+
+def _numeric_column_names(hdu, exclude: set[str]) -> list[str]:
+    names: list[str] = []
+    for col in hdu.columns:
+        name = str(col.name)
+        if name.lower() in {x.lower() for x in exclude}:
+            continue
+        fmt = str(col.format).upper()
+        # FITS numeric formats include D/E/F/I/J/K/B etc. Strings have A.
+        if not fmt.endswith("A") and not fmt.startswith("L"):
+            names.append(name)
+    return names
+
+
+def _find_time_columns(hdu) -> list[str]:
+    names = [str(x.name) for x in hdu.columns]
+    preferred = []
+    for name in names:
+        low = name.lower()
+        if low in {"time", "mjd", "isot", "timestamp", "datetime", "date", "utc"}:
+            preferred.append(name)
+    return preferred
+
+
+def _choose_time_column(hdu, table_name: str) -> tuple[Optional[str], Optional[str], list[str]]:
+    candidates = _find_time_columns(hdu)
+    if not candidates:
+        return None, None, []
+    # HEL1OS light curves contain both MJD and ISOT. They are two representations
+    # of the same time axis, so MJD is selected only when the pair exists.
+    lowers = {x.lower(): x for x in candidates}
+    if "mjd" in lowers and "isot" in lowers:
+        return lowers["mjd"], "mjd", candidates
+    if len(candidates) == 1:
+        name = candidates[0]
+        return name, name.lower(), candidates
+    # If more than one candidate exists and they are not the known MJD/ISOT pair,
+    # do not guess.
+    return None, None, candidates
+
+
+def _to_utc_datetime(values, time_kind: str, header: dict[str, Any]) -> pd.DatetimeIndex:
+    _, Time = _Astropy.load()
+    arr = np.asarray(values)
+    if time_kind == "mjd":
+        t = Time(arr.astype(float), format="mjd", scale="utc")
+    elif time_kind in {"isot", "datetime", "date", "utc", "timestamp"}:
+        # Astropy handles the ISO strings and timezone-free UTC strings robustly.
+        t = Time(arr.astype(str), format="isot", scale="utc")
+    elif time_kind == "time":
+        # SoLEXS uses Unix seconds; the manual identifies TIME as Unix time.
+        timeunit = str(header.get("TIMEUNIT", "s")).strip().lower()
+        if timeunit not in {"s", "sec", "second", "seconds"}:
+            raise DataAdapterError(
+                f"Unsupported TIMEUNIT={timeunit!r}; adapter will not guess a conversion."
+            )
+        t = Time(arr.astype(float), format="unix", scale="utc")
+    else:
+        raise DataAdapterError(f"Unsupported time representation: {time_kind}")
+    # pandas conversion preserves UTC awareness.
+    return pd.DatetimeIndex(t.to_datetime())
+
+
+def _cadence(values: pd.DatetimeIndex) -> dict[str, Any]:
+    if len(values) < 2:
+        return {"n_intervals": 0, "detected_seconds": None, "median_seconds": None,
+                "min_seconds": None, "max_seconds": None, "irregular_fraction": None}
+    ns = values.view("int64")
+    diffs = np.diff(ns) / 1e9
+    finite = diffs[np.isfinite(diffs)]
+    if len(finite) == 0:
+        return {"n_intervals": 0, "detected_seconds": None, "median_seconds": None,
+                "min_seconds": None, "max_seconds": None, "irregular_fraction": None}
+    median = float(np.median(finite))
+    irregular = float(np.mean(np.abs(finite - median) > max(1e-9, median * 1e-6)))
+    return {
+        "n_intervals": int(len(finite)),
+        "detected_seconds": round(median, 9),
+        "median_seconds": round(median, 9),
+        "min_seconds": float(np.min(finite)),
+        "max_seconds": float(np.max(finite)),
+        "irregular_fraction": irregular,
+    }
+
+
+def _safe_numeric_summary(series: pd.Series) -> dict[str, Any]:
+    numeric = pd.to_numeric(series, errors="coerce")
+    finite = numeric[np.isfinite(numeric)]
+    return {
+        "dtype": str(series.dtype),
+        "missing": int(series.isna().sum()),
+        "finite": int(finite.shape[0]),
+        "non_finite": int(numeric.notna().sum() - finite.shape[0]),
+        "min": float(finite.min()) if len(finite) else None,
+        "max": float(finite.max()) if len(finite) else None,
+    }
+
+
+def _source_files(source: str | Path) -> list[SourceFile]:
+    path = Path(source).expanduser()
+    if not path.exists():
+        raise DataAdapterError(f"Data source does not exist: {path}")
+    if path.is_dir():
+        files = [SourceFile(str(p)) for p in sorted(path.rglob("*")) if p.is_file() and _is_fits_name(p.name)]
+        if not files:
+            raise DataAdapterError(f"No FITS/FITS.GZ files found under: {path}")
+        return files
+    if path.suffix.lower() == ".zip":
+        with zipfile.ZipFile(path) as zf:
+            members = [n for n in zf.namelist() if not n.endswith("/") and _is_fits_name(n)]
+        if not members:
+            raise DataAdapterError(
+                f"No supported FITS-based products found inside: {path}. "
+                "SoLEXS Level-1 archives may contain nested SDD1/SDD2 folders "
+                "with .lc.gz, .gti.gz and .pi.gz products."
+            )
+        return [SourceFile(str(path), m) for m in sorted(members)]
+    if _is_fits_name(path.name):
+        return [SourceFile(str(path))]
+    raise DataAdapterError(f"Unsupported data source: {path}. Expected a FITS file, directory, or ZIP archive.")
+
+
+@contextmanager
+def _open_source(ref: SourceFile):
+    fits, _ = _Astropy.load()
+    if ref.member is None:
+        with fits.open(ref.source, memmap=False, mode="readonly") as hdul:
+            yield hdul
+        return
+    with zipfile.ZipFile(ref.source) as zf:
+        raw = zf.read(ref.member)
+    if ref.member.lower().endswith(".gz"):
+        raw = gzip.decompress(raw)
+    with fits.open(io.BytesIO(raw), memmap=False, mode="readonly") as hdul:
+        yield hdul
+
+
+def _config_sources(cfg) -> list[tuple[str, str]]:
+    data = cfg.data
+    kind = data.input_configuration
+    if kind == "solexs_only":
+        source = data.solexs_source or data.source_path
+        if not source:
+            raise DataAdapterError(
+                "SoLEXS source is not configured. Set data.solexs_source or data.source_path "
+                "(or pass --solexs-source to run_experiment.py)."
+            )
+        source_list = source if isinstance(source, (list, tuple)) else [source]
+        return [("SoLEXS", item) for item in source_list]
+    if kind == "helios_only":
+        source = data.helios_source or data.source_path
+        if not source:
+            raise DataAdapterError(
+                "HEL1OS source is not configured. Set data.helios_source or data.source_path "
+                "(or pass one or more paths to --helios-source)."
+            )
+        source_list = source if isinstance(source, (list, tuple)) else [source]
+        return [("HEL1OS", item) for item in source_list]
+    sources = []
+    if data.solexs_source:
+        solexs_sources = data.solexs_source if isinstance(data.solexs_source, (list, tuple)) else [data.solexs_source]
+        sources.extend(("SoLEXS", item) for item in solexs_sources)
+    if data.helios_source:
+        helios_sources = data.helios_source if isinstance(data.helios_source, (list, tuple)) else [data.helios_source]
+        sources.extend(("HEL1OS", item) for item in helios_sources)
+    if not any(name == "SoLEXS" for name, _ in sources) or not any(name == "HEL1OS" for name, _ in sources):
+        raise DataAdapterError(
+            "Combined input requires both data.solexs_source and data.helios_source "
+            "(at least one source for each instrument). Pass --solexs-source and one or more paths "
+            "to --helios-source or set them in the config."
+        )
+    return sources
+
+
+class ConfiguredDataAdapter(DataAdapter):
+    """Phase-2 adapter for real SoLEXS/HEL1OS FITS products."""
+
+    PHASE = 2
+    IMPLEMENTED = True
+
+    def __init__(self, cfg=None, run_dir=None):
+        self.cfg = cfg
+        self.run_dir = Path(run_dir) if run_dir else None
+        self.log = get_logger("data_adapter")
+        self._files: list[LoadedFITS] = []
+        self._extensions: list[dict[str, Any]] = []
+
+    def load_data(self, source=None, **options) -> list[LoadedFITS]:
+        if source is None:
+            if self.cfg is None:
+                raise DataAdapterError("No configuration supplied to the data adapter.")
+            refs = [ref for _, src in _config_sources(self.cfg) for ref in _source_files(src)]
+        else:
+            if isinstance(source, (list, tuple)):
+                refs = [ref for item in source for ref in _source_files(item)]
+            else:
+                refs = _source_files(source)
+
+        loaded: list[LoadedFITS] = []
+        for ref in refs:
+            with _open_source(ref) as hdul:
+                headers = [_header_to_dict(hdu.header) for hdu in hdul]
+                instrument = _instrument_from_headers(headers, ref.display_name)
+                product = _classify_product(ref.display_name, headers)
+                loaded.append(LoadedFITS(ref=ref, instrument=instrument, headers=headers,
+                                         product_types=[product]))
+        self._files = loaded
+        return loaded
+
+    def validate_schema(self, raw: list[LoadedFITS]) -> SchemaReport:
+        report = SchemaReport(file_format="FITS/FITS.GZ")
+        report.columns = []
+        report.dtypes = {}
+        report.missing_values = {}
+        report.numeric_ranges = {}
+        report.channel_identifiers = []
+        report.cadence = {"streams": {}}
+        report.temporal_coverage = {"streams": {}}
+        report.n_observations = 0
+
+        products: dict[str, int] = {}
+        extensions: list[dict[str, Any]] = []
+        measurement_candidates: list[dict[str, Any]] = []
+        files_meta: list[dict[str, Any]] = []
+
+        for loaded in raw:
+            file_meta = {
+                "source": loaded.ref.display_name,
+                "instrument": loaded.instrument,
+                "products": loaded.product_types,
+            }
+            files_meta.append(file_meta)
+            product = loaded.product_types[0]
+            products[product] = products.get(product, 0) + 1
+            with _open_source(loaded.ref) as hdul:
+                for idx, hdu in enumerate(hdul):
+                    if not hasattr(hdu, "columns") or hdu.columns is None:
+                        continue
+                    if len(hdu.columns) == 0:
+                        continue
+                    ext = str(hdu.header.get("EXTNAME", f"HDU{idx}")).strip()
+                    names = [str(c.name) for c in hdu.columns]
+                    ext_meta = {
+                        "file": loaded.ref.display_name,
+                        "instrument": loaded.instrument,
+                        "hdu": idx,
+                        "extension": ext,
+                        "columns": names,
+                        "product_type": product,
+                        "detector": _detector_from_header(_header_to_dict(hdu.header), loaded.ref.display_name),
+                        "n_rows": int(getattr(hdu, "size", 0) or hdu.header.get("NAXIS2", 0)),
+                    }
+                    extensions.append(ext_meta)
+                    if product == "lightcurve":
+                        time_col, time_kind, time_candidates = _choose_time_column(hdu, ext)
+                        numeric_cols = _numeric_column_names(hdu, set(time_candidates))
+                        measurement_candidates.append({
+                            **ext_meta,
+                            "time_column": time_col,
+                            "time_kind": time_kind,
+                            "time_candidates": time_candidates,
+                            "measurement_columns": numeric_cols,
+                            "units": {c: _unit_for_column(hdu, c) for c in numeric_cols},
+                        })
+                        if time_col is None:
+                            report.mark_undetermined(f"time_axis:{loaded.ref.display_name}#{ext}")
+                        if not numeric_cols:
+                            report.mark_undetermined(f"measurement_columns:{loaded.ref.display_name}#{ext}")
+                    for name in names:
+                        if name not in report.columns:
+                            report.columns.append(name)
+
+        report.products = products  # type: ignore[attr-defined]
+        report.extensions = extensions  # type: ignore[attr-defined]
+        report.files = files_meta  # type: ignore[attr-defined]
+        report.measurement_candidates = measurement_candidates  # type: ignore[attr-defined]
+        report.mark_undetermined("final model channel/band selection")
+        return report
+
+    def identify_time_axis(self, raw: list[LoadedFITS], report: SchemaReport):
+        axes = []
+        for loaded in raw:
+            with _open_source(loaded.ref) as hdul:
+                for idx, hdu in enumerate(hdul):
+                    if not hasattr(hdu, "columns") or hdu.columns is None or len(hdu.columns) == 0:
+                        continue
+                    ext = str(hdu.header.get("EXTNAME", f"HDU{idx}")).strip()
+                    candidates = _find_time_columns(hdu)
+                    if not candidates:
+                        continue
+                    chosen, kind, _ = _choose_time_column(hdu, ext)
+                    axes.append({
+                        "file": loaded.ref.display_name,
+                        "extension": ext,
+                        "chosen": chosen,
+                        "kind": kind,
+                        "candidates": candidates,
+                    })
+        report.time_axes = axes  # type: ignore[attr-defined]
+        report.timestamp_available = any(a["chosen"] is not None for a in axes)
+        if len([a for a in axes if a["chosen"] is not None]) == 1:
+            report.timestamp_column = axes[0]["chosen"]
+        else:
+            report.timestamp_column = None
+        return axes
+
+    def identify_measurement_columns(self, raw: list[LoadedFITS], report: SchemaReport):
+        candidates = getattr(report, "measurement_candidates", [])
+        report.measurement_columns = [
+            {
+                "file": c["file"], "extension": c["extension"],
+                "detector": c["detector"], "columns": c["measurement_columns"],
+                "units": c["units"],
+            }
+            for c in candidates
+        ]  # type: ignore[attr-defined]
+        return report.measurement_columns  # type: ignore[attr-defined]
+
+    def return_standardized_timeseries(self, raw: list[LoadedFITS], report: SchemaReport) -> dict[str, StandardizedStream]:
+        streams: dict[str, StandardizedStream] = {}
+        # Parse instrument GTIs using the actual product conventions observed in
+        # the supplied archives: SoLEXS START/STOP are Unix seconds; HEL1OS
+        # tstart/tstop are MJD. Intervals from split HEL1OS archives are merged.
+        gti_by_source_detector: dict[tuple[str, str], list[tuple[str, str]]] = {}
+        gti_sources: dict[tuple[str, str], list[str]] = {}
+        for gti_file in raw:
+            if gti_file.product_types[0] != "gti":
+                continue
+            instrument_name = (gti_file.instrument or "").lower()
+            if instrument_name not in {"solexs", "hel1os"}:
+                continue
+            detector = _detector_from_header(gti_file.headers[0] if gti_file.headers else {}, gti_file.ref.display_name) or "unknown"
+            intervals = []
+            with _open_source(gti_file.ref) as gti_hdul:
+                for gti_hdu in gti_hdul:
+                    if getattr(gti_hdu, "data", None) is None or not getattr(gti_hdu, "columns", None):
+                        continue
+                    cols = {str(c.name).strip().lower(): str(c.name) for c in gti_hdu.columns}
+                    if instrument_name == "solexs":
+                        start_name, stop_name, time_format = "start", "stop", "unix"
+                    else:
+                        start_name, stop_name, time_format = "tstart", "tstop", "mjd"
+                    if not {start_name, stop_name}.issubset(cols):
+                        continue
+                    starts = np.asarray(gti_hdu.data[cols[start_name]], dtype=float)
+                    stops = np.asarray(gti_hdu.data[cols[stop_name]], dtype=float)
+                    _, Time = _Astropy.load()
+                    for start_value, stop_value in zip(starts, stops):
+                        if not np.isfinite(start_value) or not np.isfinite(stop_value) or stop_value < start_value:
+                            continue
+                        start_utc = pd.to_datetime(Time(float(start_value), format=time_format, scale="utc").to_datetime(), utc=True)
+                        stop_utc = pd.to_datetime(Time(float(stop_value), format=time_format, scale="utc").to_datetime(), utc=True)
+                        intervals.append((start_utc.isoformat(), stop_utc.isoformat()))
+            key = (gti_file.ref.source, detector.upper())
+            gti_by_source_detector.setdefault(key, []).extend(intervals)
+            gti_sources.setdefault(key, []).append(gti_file.ref.display_name)
+
+        for loaded in raw:
+            if loaded.product_types[0] != "lightcurve":
+                continue
+            with _open_source(loaded.ref) as hdul:
+                for idx, hdu in enumerate(hdul):
+                    if not hasattr(hdu, "columns") or hdu.columns is None or len(hdu.columns) == 0:
+                        continue
+                    ext = str(hdu.header.get("EXTNAME", f"HDU{idx}")).strip()
+                    time_col, time_kind, time_candidates = _choose_time_column(hdu, ext)
+                    if time_col is None:
+                        continue
+                    measurement_cols = _numeric_column_names(hdu, set(time_candidates))
+                    if not measurement_cols:
+                        continue
+                    table = hdu.data
+                    timestamps = _to_utc_datetime(table[time_col], time_kind, _header_to_dict(hdu.header))
+                    detector = _detector_from_header(_header_to_dict(hdu.header), loaded.ref.display_name)
+                    instrument = loaded.instrument
+                    stream_id = self._stream_id(instrument, detector, ext, loaded.ref.display_name)
+
+                    frame = pd.DataFrame({"timestamp": timestamps})
+                    for col in measurement_cols:
+                        frame[col] = np.asarray(table[col])
+                    # Preserve the raw measurement names; no band/channel is selected.
+                    frame = frame.sort_values("timestamp", kind="stable").reset_index(drop=True)
+                    meta = _header_to_dict(hdu.header)
+                    meta["time_column"] = time_col
+                    meta["time_kind"] = time_kind
+                    meta["time_candidates"] = time_candidates
+                    meta["measurement_columns"] = measurement_cols
+                    meta["units"] = {c: _unit_for_column(hdu, c) for c in measurement_cols}
+                    if (instrument or "").lower() in {"solexs", "hel1os"}:
+                        detector_key = (detector or "unknown").upper()
+                        source_detector_key = (loaded.ref.source, detector_key)
+                        if source_detector_key in gti_by_source_detector:
+                            meta["gti_status"] = "available"
+                            meta["gti_intervals_utc"] = gti_by_source_detector[source_detector_key]
+                            meta["gti_source"] = gti_sources.get(source_detector_key, [])
+                        else:
+                            meta["gti_status"] = "not_found"
+                            meta["gti_intervals_utc"] = []
+
+                    streams[stream_id] = StandardizedStream(
+                        stream_id=stream_id,
+                        instrument=instrument,
+                        detector=detector,
+                        product_type="lightcurve",
+                        extension=ext,
+                        source_file=loaded.ref.display_name,
+                        measurement_columns=measurement_cols,
+                        dataframe=frame,
+                        metadata=meta,
+                    )
+                    self._update_report_for_stream(report, stream_id, frame, measurement_cols, loaded, ext)
+
+        report.n_observations = int(sum(len(s.dataframe) for s in streams.values()))
+        return streams
+
+    @staticmethod
+    def _stream_id(instrument, detector, extension, source_file) -> str:
+        base = instrument or "unknown"
+        det = detector or "unknown_detector"
+        safe_ext = re.sub(r"[^A-Za-z0-9_.-]+", "_", extension)
+        safe_src = re.sub(r"[^A-Za-z0-9_.-]+", "_", Path(source_file.split("::")[-1]).name)
+        return f"{base}__{det}__{safe_ext}__{safe_src}"
+
+    def _update_report_for_stream(self, report, stream_id, frame, measurement_cols, loaded, ext):
+        ts = frame["timestamp"]
+        report.cadence["streams"][stream_id] = _cadence(pd.DatetimeIndex(ts))
+        report.temporal_coverage["streams"][stream_id] = {
+            "start_utc": ts.min().isoformat() if len(ts) else None,
+            "end_utc": ts.max().isoformat() if len(ts) else None,
+        }
+        if len(ts):
+            report.n_observations = (report.n_observations or 0) + 0
+        report.duplicate_timestamps = (report.duplicate_timestamps or 0) + int(ts.duplicated().sum())
+        for col in measurement_cols:
+            key = f"{stream_id}:{col}"
+            summary = _safe_numeric_summary(frame[col])
+            report.missing_values[key] = summary["missing"]
+            report.numeric_ranges[key] = {"min": summary["min"], "max": summary["max"], "dtype": summary["dtype"]}
+            report.dtypes[key] = summary["dtype"]
+
+    def inspect(self) -> AdapterResult:
+        raw = self.load_data()
+        report = self.validate_schema(raw)
+        self.identify_time_axis(raw, report)
+        self.identify_measurement_columns(raw, report)
+        streams = self.return_standardized_timeseries(raw, report)
+        return AdapterResult(report=report, streams=streams, files=raw)
+
+
+def run_data_adapter(cfg, run_dir) -> AdapterResult:
+    """Run Phase 2, save a factual schema report and small samples, return data."""
+    adapter = ConfiguredDataAdapter(cfg, run_dir)
+    result = adapter.inspect()
+    run_dir = Path(run_dir)
+    payload = result.report.to_dict()
+    payload["standardized_streams"] = {
+        stream_id: {
+            "instrument": s.instrument,
+            "detector": s.detector,
+            "extension": s.extension,
+            "source_file": s.source_file,
+            "measurement_columns": s.measurement_columns,
+            "rows": len(s.dataframe),
+            "gti_status": s.metadata.get("gti_status"),
+            "gti_intervals_utc": s.metadata.get("gti_intervals_utc", []),
+            "gti_source": s.metadata.get("gti_source", []),
+            "sample_rows": json.loads(s.dataframe.head(10).to_json(orient="records", date_format="iso")),
+        }
+        for stream_id, s in result.streams.items()
+    }
+    (run_dir / "data_adapter_report.json").write_text(json.dumps(payload, indent=2, default=str), encoding="utf-8")
+
+    # A small sample is useful for manual inspection without copying the full data.
+    sample_dir = run_dir / "data_samples"
+    sample_dir.mkdir(exist_ok=True)
+    for stream_id, stream in result.streams.items():
+        safe = re.sub(r"[^A-Za-z0-9_.-]+", "_", stream_id)
+        stream.dataframe.head(1000).to_csv(sample_dir / f"{safe}.csv", index=False)
+
+    TransformationLog(run_dir).record(
+        "data_adapter", "inspect_and_standardize",
+        rows_before=None,
+        rows_after=sum(len(s.dataframe) for s in result.streams.values()),
+        files=len(result.files), streams=len(result.streams),
+        note="Inspection/standardization only; no rows dropped, no GTI applied, no resampling, no feature selection.",
+    )
+    get_logger("data_adapter").info(
+        "Phase 2 inspection complete: %d FITS files, %d standardized lightcurve streams.",
+        len(result.files), len(result.streams),
+    )
+    return result

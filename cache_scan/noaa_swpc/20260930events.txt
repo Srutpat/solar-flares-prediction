@@ -1,0 +1,18 @@
+:Product: 20260930events.txt
+:Created: 2026 Oct 03 0357 UT
+:Date: 2026 09 30
+# Prepared by the U.S. Dept. of Commerce, NOAA, Space Weather Prediction Center
+# Please send comments and suggestions to SWPC.Webmaster@noaa.gov 
+#
+# Missing data: ////
+# Updated every 5 minutes.
+#                            Edited Events for 2026 Sep 30
+#
+#Event    Begin    Max       End  Obs  Q  Type  Loc/Frq   Particulars       Reg#
+#-------------------------------------------------------------------------------
+
+9920 +     0230   0246      0305  G18  5   XRA  1-8A      C8.6    1.0E-02   4535
+
+9910      B0251   0251      0318  LEA  3   FLA  N11W45    1F      ERU       4535
+9910       0252   ////      0256  PAL  C   RSP  035-051   II/2    523       4535
+9910       0256   ////      0259  PAL  C   RSP  025-075   IV/1              4535

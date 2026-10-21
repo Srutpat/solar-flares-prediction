@@ -1,0 +1,56 @@
+:Product: 20261005events.txt
+:Created: 2026 Oct 08 0357 UT
+:Date: 2026 10 05
+# Prepared by the U.S. Dept. of Commerce, NOAA, Space Weather Prediction Center
+# Please send comments and suggestions to SWPC.Webmaster@noaa.gov 
+#
+# Missing data: ////
+# Updated every 5 minutes.
+#                            Edited Events for 2026 Oct 05
+#
+#Event    Begin    Max       End  Obs  Q  Type  Loc/Frq   Particulars       Reg#
+#-------------------------------------------------------------------------------
+
+ 150       0031   0044      0052  G19  5   XRA  1-8A      B3.6    5.2E-04       
+
+ 200       0052   0058      0101  G19  5   XRA  1-8A      B3.3    2.2E-04       
+
+ 160       0221   0221      0222  PAL  G   RBR  4995      1400                  
+
+ 210       0537   0547      0550  G18  5   XRA  1-8A      B7.9    6.8E-04       
+
+ 170 +     0545   0550      0554  LEA  3   FLA  N18E18    SF                4545
+ 170 +     0550   0601      0605  G18  5   XRA  1-8A      B9.6    9.1E-04   4545
+
+ 230       0606   0614      0619  G18  5   XRA  1-8A      C1.0    8.1E-04   4545
+
+ 180       0838   0848      0900  G19  5   XRA  1-8A      B3.8    5.4E-04       
+
+ 220       0900   0907      0910  G19  5   XRA  1-8A      B4.1    2.7E-04       
+
+ 240       1134   1148      1155  G18  5   XRA  1-8A      C1.5    1.5E-03   4547
+ 240      B1143  U1147     A1205  SVI  3   FLA  N16W38    SF                4547
+
+ 260 +     1155   1200      1202  G18  5   XRA  1-8A      C1.3    7.3E-04   4547
+ 260      B1207  U1209     A1212  SVI  3   FLA  N16W42    SF                4547
+
+ 270       1403   1412      1419  G18  5   XRA  1-8A      B5.3    4.6E-04   4547
+
+ 280 +     1723   1731      1734  G18  5   XRA  1-8A      B7.7    3.7E-04   4549
+
+ 290 +     1747   1755      1804  G18  5   XRA  1-8A      B8.4    7.1E-04   4549
+
+ 300 +     1836   1848      1857  G18  5   XRA  1-8A      M1.0    9.1E-03   4545
+
+ 310       2003   2014      2022  G19  5   XRA  1-8A      B5.8    7.6E-04   4549
+
+ 320       2022   2032      2037  G19  5   XRA  1-8A      B5.6    5.5E-04   4549
+
+ 330 +     2056   2105      2111  G19  5   XRA  1-8A      B6.6    7.5E-04   4549
+ 330       2119   2119      2119  PAL  U   RBR  245       100                   
+
+ 340       2152   2152      2152  PAL  U   RBR  245       290                   
+
+ 350 +     2227   2234      2242  G18  5   XRA  1-8A      C1.3    1.2E-03   4549
+
+ 410 +     2242   2247      2250  G18  5   XRA  1-8A      C1.2    6.8E-04       

@@ -1,0 +1,9 @@
+extends: base.yaml
+experiment:
+  name: solexs_only
+data:
+  input_configuration: solexs_only
+
+features:
+  history_window_minutes: 60
+  rolling_window_minutes: [1, 5, 15]

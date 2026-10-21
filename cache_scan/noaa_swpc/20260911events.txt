@@ -1,0 +1,64 @@
+:Product: 20260911events.txt
+:Created: 2026 Sep 14 0357 UT
+:Date: 2026 09 11
+# Prepared by the U.S. Dept. of Commerce, NOAA, Space Weather Prediction Center
+# Please send comments and suggestions to SWPC.Webmaster@noaa.gov 
+#
+# Missing data: ////
+# Updated every 5 minutes.
+#                            Edited Events for 2026 Sep 11
+#
+#Event    Begin    Max       End  Obs  Q  Type  Loc/Frq   Particulars       Reg#
+#-------------------------------------------------------------------------------
+
+8200       0013   0013      0013  PAL  U   RBR  245       120                   
+
+8210       0101   ////      0116  PAL  C   RSP  025-075   VI/2                  
+8210 +     0107   0114      0116  G18  5   XRA  1-8A      B5.3    3.2E-04   4521
+
+8220       0236   0241      0241  PAL  U   RBR  245       620                   
+
+8230       0244   0244      0245  PAL  U   RBR  245       1400                  
+
+8240       0248   0256      0307  G19  5   XRA  1-8A      B6.7    7.5E-04   4530
+
+8260       0507   ////      0705  SVI  C   RSP  025-180   CTM/1                 
+8260       0510   ////      0510  SVI  C   RSP  025-074   III/1                 
+8260       0547   ////      0600  SVI  C   RSP  025-153   VI/1                  
+
+8270       0714   ////      0722  SVI  C   RSP  025-180   III/1                 
+
+8280       0803   ////      1006  SVI  C   RSP  075-180   CTM/1                 
+8280       0822   0822      0822  SVI  G   RBR  245       380                   
+8280 +     0822   ////      0824  SVI  C   RSP  025-084   III/1                 
+
+8290 +     1041   ////      1042  SAG  C   RSP  025-053   III/1                 
+
+8300       1127   1133      1135  G19  5   XRA  1-8A      B3.8    2.1E-04   4521
+8300 +     1131   ////      1133  SVI  C   RSP  025-084   III/1                 
+
+8310 +     1234   ////      1235  SVI  C   RSP  075-158   III/1                 
+
+8320       1300   1300      1300  SAG  G   RBR  410       110                   
+
+8330 +     1355   1403      1408  G18  5   XRA  1-8A      B5.8    4.1E-04   4521
+8330 +     1400   ////      1406  SAG  C   RSP  025-048   III/2                 
+
+8340       1455   ////      1503  SAG  C   RSP  025-053   III/1                 
+
+8350 +     1603   ////      1655  SVI  C   RSP  113-180   CTM/1                 
+
+8360 +     1755   ////      1819  SAG  C   RSP  025-180   VI/1                  
+
+8370       2050   ////      2050  PAL  C   RSP  025-058   III/1                 
+
+8380 +     2143   2149      2153  G18  5   XRA  1-8A      B5.8    3.3E-04   4521
+
+8250 +     2207   2219      2219  PAL  U   RNS  245       220                   
+
+8390       2207   2207      2207  PAL  U   RBR  245       100                   
+
+8400 +     2226   2236      2255  G18  5   XRA  1-8A      B7.8    1.2E-03   4524
+
+8410 +     2306   2314      2318  G18  5   XRA  1-8A      B8.5    5.6E-04   4521
+8410       2307   ////      2349  PAL  C   RSP  025-072   VI/2                  

@@ -1,0 +1,48 @@
+:Product: 20261007events.txt
+:Created: 2026 Oct 10 0357 UT
+:Date: 2026 10 07
+# Prepared by the U.S. Dept. of Commerce, NOAA, Space Weather Prediction Center
+# Please send comments and suggestions to SWPC.Webmaster@noaa.gov 
+#
+# Missing data: ////
+# Updated every 5 minutes.
+#                            Edited Events for 2026 Oct 07
+#
+#Event    Begin    Max       End  Obs  Q  Type  Loc/Frq   Particulars       Reg#
+#-------------------------------------------------------------------------------
+
+ 580       0032   0032      0032  PAL  U   RBR  245       100                   
+
+ 590       0040   ////      0040  LEA  C   RSP  030-092   III/2                 
+
+ 600       0514   0520      0525  G18  5   XRA  1-8A      C1.3    9.4E-04       
+
+ 610 +     0526   0534      0543  G18  5   XRA  1-8A      C1.6    1.7E-03   4549
+
+ 620       0847   0856      0907  G19  5   XRA  1-8A      C1.4    2.0E-03   4549
+
+ 630       0907   0912      0916  G19  5   XRA  1-8A      C1.3    8.7E-04   4549
+
+ 640       1049   ////      1050  SVI  C   RSP  025-065   III/1                 
+
+ 650       1224   1239      1249  G18  5   XRA  1-8A      C1.1    1.7E-03   4549
+
+ 670 +     1249   1317      1344  G18  5   XRA  1-8A      C7.9    1.8E-02   4549
+ 670 +     1311   1314      1315  SVI  G   RBR  610       380                   
+
+ 660      B1347   1339      1405  HOL  3   FLA  N11W07    SF                4549
+
+ 680       1834   ////      1834  SAG  C   RSP  025-041   III/1                 
+
+ 690       1903   1910      1917  HOL  3   FLA  N09W14    SF                4549
+
+ 700       1923   1940      1944  HOL  3   FLA  N09W14    SF                4549
+
+ 710       2107   2110      2116  HOL  3   FLA  N09W13    SF      ERU       4549
+
+ 720       2136   2136      2142  HOL  3   FLA  N09W15    SF                4549
+
+ 730 +     2239   2246      2250  G18  5   XRA  1-8A      C1.1    7.4E-04   4549
+ 730       2241   2245      2309  HOL  3   FLA  N09W15    SF      ERU       4549
+
+ 740       2257   2305      2309  G19  5   XRA  1-8A      C1.0    7.1E-04   4549

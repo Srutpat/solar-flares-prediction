@@ -1,0 +1,63 @@
+:Product: 20261008events.txt
+:Created: 2026 Oct 11 0357 UT
+:Date: 2026 10 08
+# Prepared by the U.S. Dept. of Commerce, NOAA, Space Weather Prediction Center
+# Please send comments and suggestions to SWPC.Webmaster@noaa.gov 
+#
+# Missing data: ////
+# Updated every 5 minutes.
+#                            Edited Events for 2026 Oct 08
+#
+#Event    Begin    Max       End  Obs  Q  Type  Loc/Frq   Particulars       Reg#
+#-------------------------------------------------------------------------------
+
+ 750 +     0045   0059      0111  G18  5   XRA  1-8A      C1.6    2.3E-03   4549
+
+ 760       1225   1225      1225  SAG  G   RBR  245       130                   
+
+ 770       1444   1452      1456  G19  5   XRA  1-8A      C1.4    1.1E-03       
+
+ 780 +     1529   1548      1558  G18  5   XRA  1-8A      M6.7    5.4E-02   4549
+ 780      B1535   1546      1652  HOL  3   FLA  N12W20    2B      ERU       4549
+ 780 +     1536   1541      1549  SAG  G   RBR  410       1000              4549
+ 780 +     1540   1544      1548  SAG  G   RBR  245       930               4549
+ 780       1541   ////      1559  SAG  C   RSP  025-180   II/3    4125      4549
+ 780 +     1552   1552      1553  SAG  G   RBR  610       120               4549
+
+ 830       1558   1558      1657  SAG  G   RNS  610       130                   
+
+ 790       1612   1614      1617  SAG  G   RBR  245       550                   
+ 790       1612   1614      1617  SAG  G   RBR  410       940                   
+ 790       1612   1614      1615  SAG  G   RBR  610       270                   
+ 790       1612   ////      1634  SAG  C   RSP  025-180   IV/1                  
+
+ 800       1643   1644      1644  SAG  G   RBR  245       100                   
+
+ 810       1644   1644      1644  SAG  G   RBR  410       110                   
+
+ 820       1651   1651      1651  SAG  G   RBR  245       100                   
+
+ 840 +     1802   1815      1838  SAG  G   RBR  245       43000             4549
+ 840       1802   1815      1835  SAG  G   RBR  410       9800              4549
+ 840       1807   1812      1832  SAG  G   RBR  610       1700              4549
+ 840       1810   1836      1849  HOL  3   FLA  N08W26    SF                4549
+ 840       1811   ////      1843  SAG  C   RSP  025-180   IV/1              4549
+
+ 860       1848   1920      1930  SAG  G   RBR  245       1600              4549
+ 860 +     1851   1851      1854  HOL  3   FLA  N08W25    SF                4549
+ 860       1853   1914      1928  SAG  G   RBR  410       810               4549
+
+ 870       1934   1935      1938  HOL  3   FLA  N08W27    SF                4549
+
+ 880       1955   1956      1956  SAG  G   RBR  245       220                   
+
+ 890       1959   1959      2001  HOL  3   FLA  N08W28    SF                4549
+
+ 900       2002   2027      2100  HOL  3   FLA  N08W28    SF      ERU       4549
+ 900 +     2021   2027      2031  G18  5   XRA  1-8A      C2.1    1.4E-03   4549
+
+ 910 +     2113   2117      2125  G18  5   XRA  1-8A      C1.5    1.1E-03   4549
+ 910       2117   2127      2142  HOL  3   FLA  N07W26    SF                4549
+
+ 920 +     2233   2244      2253  G18  5   XRA  1-8A      C3.5    2.9E-03   4549
+ 920       2235   2245      2323  HOL  3   FLA  N07W26    SF      ERU       4549

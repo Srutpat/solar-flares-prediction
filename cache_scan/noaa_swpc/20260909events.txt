@@ -1,0 +1,40 @@
+:Product: 20260909events.txt
+:Created: 2026 Sep 12 0357 UT
+:Date: 2026 09 09
+# Prepared by the U.S. Dept. of Commerce, NOAA, Space Weather Prediction Center
+# Please send comments and suggestions to SWPC.Webmaster@noaa.gov 
+#
+# Missing data: ////
+# Updated every 5 minutes.
+#                            Edited Events for 2026 Sep 09
+#
+#Event    Begin    Max       End  Obs  Q  Type  Loc/Frq   Particulars       Reg#
+#-------------------------------------------------------------------------------
+
+7930       0438   0446      0449  G18  5   XRA  1-8A      B5.0    3.3E-04   4521
+
+7940       0519   ////      0519  SVI  C   RSP  025-064   III/2                 
+
+7950 +     0553   0610      0625  G18  5   XRA  1-8A      C1.5    2.2E-03   4528
+7950       0555   ////      0610  SVI  C   RSP  025-165   VI/2              4528
+7950      B0618  U0618     A0627  SVI  2   FLA  S11E44    SF                4528
+
+7960       0848   0908      0923  G19  5   XRA  1-8A      C3.4    4.3E-03   4524
+7960       0855  U0900     A0942  SVI  3   FLA  N14W02    1F      ERU       4524
+7960       0903   0904      0905  SVI  G   RBR  610       170               4524
+7960       0904   0904      0904  SVI  G   RBR  1415      110               4524
+
+7970       0931   0931      0931  SVI  G   RBR  410       190                   
+
+7980 +     1023   1032      1037  G18  5   XRA  1-8A      C3.2    1.8E-03   4521
+7980      B1027  U1028     A1045  SVI  3   FLA  N13W44    SF                4521
+
+7990       1243   ////      1244  SAG  C   RSP  025-055   III/1                 
+
+8000 +     1406   ////      1407  SVI  C   RSP  025-158   III/1                 
+
+8010       1638   ////      1639  SAG  C   RSP  025-061   III/1                 
+
+8030       1759   ////      1935  SAG  C   RSP  025-073   VI/1                  
+
+8020       1905   ////      1935  PAL  C   RSP  025-075   VI/1                  

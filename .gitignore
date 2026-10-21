@@ -1,0 +1,7 @@
+__pycache__/
+*.pyc
+.pytest_cache/
+experiments/runs/*
+!experiments/runs/.gitkeep
+data/*
+!data/README.md

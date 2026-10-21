@@ -1,0 +1,14 @@
+:Product: 20260917events.txt
+:Created: 2026 Sep 20 0357 UT
+:Date: 2026 09 17
+# Prepared by the U.S. Dept. of Commerce, NOAA, Space Weather Prediction Center
+# Please send comments and suggestions to SWPC.Webmaster@noaa.gov 
+#
+# Missing data: ////
+# Updated every 5 minutes.
+#                            Edited Events for 2026 Sep 17
+#
+#Event    Begin    Max       End  Obs  Q  Type  Loc/Frq   Particulars       Reg#
+#-------------------------------------------------------------------------------
+
+8900       1208   1216      1224  G18  5   XRA  1-8A      B3.2    3.1E-04       
