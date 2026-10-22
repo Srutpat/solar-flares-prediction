@@ -48,7 +48,10 @@ class OnsetLabelBuilder(LabelBuilder):
         events = (pd.to_datetime(event_rows["onset_utc"], utc=True, errors="coerce")
                   .dropna().drop_duplicates().sort_values())
 
-        stamp_ns = stamps.astype("int64").to_numpy()
+       # Keep timestamp and horizon arithmetic in the same nanosecond unit.
+                # Keep timestamp and horizon arithmetic in the same nanosecond unit.
+                # Keep timestamp and horizon arithmetic in the same nanosecond unit.
+        stamp_ns = stamps.astype("datetime64[ns, UTC]").astype("int64").to_numpy()
         diffs_s = np.diff(stamp_ns) / 1e9
         positive_diffs = diffs_s[np.isfinite(diffs_s) & (diffs_s > 0)]
         cadence = float(np.median(positive_diffs)) if len(positive_diffs) else None
@@ -63,7 +66,7 @@ class OnsetLabelBuilder(LabelBuilder):
             segment_ends[int(sid)] = int(np.flatnonzero(segment_ids == sid)[-1])
 
         out = pd.DataFrame({"timestamp": stamps, "segment_id": segment_ids})
-        event_ns = events.astype("int64").to_numpy()
+        event_ns = events.astype("datetime64[ns, UTC]").astype("int64").to_numpy()
         for horizon in horizons_minutes:
             horizon = int(horizon)
             if horizon <= 0:

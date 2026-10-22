@@ -126,7 +126,8 @@ def _coverage_segments(timeline: pd.Series, gap_factor: float = 3.0,
     stamps = pd.to_datetime(pd.Series(timeline), utc=True, errors="coerce").dropna().drop_duplicates().sort_values()
     if stamps.empty:
         return [], None, float(minimum_gap_seconds)
-    ns = stamps.astype("int64").to_numpy()
+    # Normalize datetime integers to nanoseconds before calculating gaps.
+    ns = stamps.astype("datetime64[ns, UTC]").astype("int64").to_numpy()
     gaps = np.diff(ns) / 1e9
     positive = gaps[gaps > 0]
     cadence = float(np.median(positive)) if len(positive) else None

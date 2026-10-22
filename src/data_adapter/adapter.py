@@ -264,6 +264,7 @@ def _to_utc_datetime(values, time_kind: str, header: dict[str, Any]) -> pd.Datet
     else:
         raise DataAdapterError(f"Unsupported time representation: {time_kind}")
     # pandas conversion preserves UTC awareness.
+    # src/data_adapter/adapter.py, around line 267
     return pd.DatetimeIndex(t.to_datetime())
 
 
@@ -401,15 +402,26 @@ class ConfiguredDataAdapter(DataAdapter):
                 refs = [ref for item in source for ref in _source_files(item)]
             else:
                 refs = _source_files(source)
-
         loaded: list[LoadedFITS] = []
-        for ref in refs:
+        total = len(refs)
+        self.log.info("Starting FITS inspection: %d files", total)
+
+        for index, ref in enumerate(refs, start=1):
+            self.log.info(
+                "Inspecting file %d/%d: %s",
+                index, total, ref.display_name
+            )
             with _open_source(ref) as hdul:
                 headers = [_header_to_dict(hdu.header) for hdu in hdul]
                 instrument = _instrument_from_headers(headers, ref.display_name)
                 product = _classify_product(ref.display_name, headers)
-                loaded.append(LoadedFITS(ref=ref, instrument=instrument, headers=headers,
-                                         product_types=[product]))
+                loaded.append(LoadedFITS(
+                    ref=ref,
+                    instrument=instrument,
+                    headers=headers,
+                    product_types=[product],
+                ))
+
         self._files = loaded
         return loaded
 
